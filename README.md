@@ -1,2 +1,2 @@
 # NeuroScanApp.github.io
-NeuroScan Trial
+index.html
