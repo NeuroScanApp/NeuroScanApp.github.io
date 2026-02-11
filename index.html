@@ -1,9 +1,36 @@
+Com certeza! Ótimas sugestões. Ambas as alterações são perfeitamente possíveis e irão melhorar muito a clareza e o valor didático do protótipo.
+
+Vamos implementar as duas solicitações:
+
+1.  **Ajustar a Lista de Pontos Neurais:** Vou modificar o "banco de dados em memória" do código para refletir exatamente a lista que você pediu.
+2.  **Adicionar Texto Explicativo e Didático:** Sim, podemos fazer isso. Vou criar uma nova seção no relatório que gera um texto explicativo para **cada achado**, explicando o que ele significa em termos clínicos simples. Isso adiciona um enorme valor educacional à ferramenta.
+
+Esta será a **versão 4.0** do nosso protótipo, focada em conteúdo clínico e usabilidade.
+
+---
+
+### **Instruções para Atualizar o Site**
+
+O processo é o mesmo de sempre, garantindo que a versão mais recente esteja no ar:
+
+1.  Acesse o arquivo `index.html` no seu repositório do GitHub.
+2.  Clique no ícone de lápis (✏️) para editar.
+3.  **Apague todo o código antigo.**
+4.  **Copie e cole o novo código v4.0** que forneci abaixo.
+5.  Clique em "Commit changes".
+6.  Aguarde 1-2 minutos e acesse seu site: **[https://neuroscanapp.github.io/](https://neuroscanapp.github.io/)**
+
+---
+
+### **Código do Protótipo v4.0 (Com Explicações Didáticas)**
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroScan v2.0 - Trial Interativo</title>
+    <title>NeuroScan v4.0 - Trial com Análise Didática</title>
     <style>
         :root {
             --primary-color: #007BFF;
@@ -13,6 +40,7 @@
             --danger-color: #DC3545;
             --warning-color: #FFC107;
             --info-color: #17A2B8;
+            --success-color: #28A745;
             --border-color: #dee2e6;
         }
         body {
@@ -37,21 +65,30 @@
             padding-bottom: 10px;
             margin-top: 0;
         }
-        .config-section, .input-section, #report-section {
-            margin-bottom: 40px;
+        .tab-navigation {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
         }
-        label {
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1.1em;
+            color: var(--secondary-color);
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
             font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
         }
-        input[type="number"] {
-            width: 100px;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            font-size: 1em;
-            text-align: center;
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
         table {
             width: 100%;
@@ -66,77 +103,80 @@
         th {
             background-color: #f2f2f2;
         }
-        .csa-input {
-            width: 80px;
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-size: 1em;
         }
-        .analyze-btn {
-            background-color: var(--primary-color);
-            color: white;
+        .btn {
             border: none;
-            padding: 12px 25px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1.1em;
             font-weight: bold;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.2s;
-        }
-        .analyze-btn:hover {
-            background-color: #0056b3;
-        }
-        #report-section {
-            display: none;
-            border: 1px solid var(--primary-color);
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #f0f5ff;
-        }
-        .report-summary {
-            font-style: italic;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .altered {
-            font-weight: bold;
-            color: var(--danger-color);
-        }
-        .finding-tag {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            margin-left: 10px;
             color: white;
+        }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-main { background-color: var(--primary-color); }
+        .toggle-btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.8em;
+        }
+        .toggle-btn.enabled { background-color: var(--success-color); }
+        .toggle-btn.disabled { background-color: var(--secondary-color); }
+        #add-point-form {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px dashed var(--border-color);
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        /* Estilos do Relatório */
+        #report-section { display:none; margin-top: 30px; }
+        .report-summary { font-style: italic; }
+        .finding-tag {
+            display: inline-block; padding: 3px 8px; border-radius: 12px;
+            font-size: 0.8em; margin-left: 10px; color: white;
         }
         .tag-thickened { background-color: var(--danger-color); }
         .tag-asymmetry { background-color: var(--warning-color); color: #333; }
         .tag-focal-change { background-color: var(--info-color); }
+        .explanation-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .explanation-item {
+            margin-bottom: 15px;
+        }
+        .explanation-item strong {
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>NeuroScan v2.0 - Trial Interativo</h1>
+        <h1>NeuroScan v4.0 - Trial com Análise Didática</h1>
 
-        <div class="config-section">
-            <h2>Menu de Configuração</h2>
-            <div>
-                <label for="asymmetry-threshold">Limiar de Assimetria (mm²):</label>
-                <input type="number" id="asymmetry-threshold" value="2.5" step="0.1">
-            </div>
-            <div style="margin-top: 15px;">
-                <label for="focal-change-threshold">Limiar de Variação Focal (%):</label>
-                <input type="number" id="focal-change-threshold" value="50" step="1">
-            </div>
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="openTab('exam')">Exame</button>
+            <button class="tab-btn" onclick="openTab('edit-points')">Editar Pontos de Medição</button>
+            <button class="tab-btn" onclick="openTab('edit-references')">Editar Valores de Referência</button>
         </div>
 
-        <div class="input-section">
-            <h2>Entrada de Dados: Protocolo de Rastreio</h2>
-            <p>Preencha os valores de CSA (mm²) medidos. Deixe em branco os campos não medidos.</p>
+        <!-- ABA 1: EXAME -->
+        <div id="exam" class="tab-content active">
+            <h2>Entrada de Dados do Exame</h2>
+            <p>Preencha os valores de CSA (mm²). Apenas os pontos habilitados são exibidos.</p>
             <table id="measurements-table">
                 <thead>
                     <tr>
@@ -146,111 +186,214 @@
                         <th style="text-align: center;">CSA Esquerda (mm²)</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Gerado por JavaScript -->
-                </tbody>
+                <tbody></tbody>
             </table>
-            <button class="analyze-btn" onclick="runAnalysis()">Analisar e Gerar Relatório</button>
+            <button class="btn btn-main" style="width: 100%; padding: 12px; font-size: 1.1em;" onclick="runAnalysis()">Analisar e Gerar Relatório</button>
+            
+            <div id="report-section">
+                <h2>Relatório de Análise Quantitativa</h2>
+                <p id="report-summary-text"></p>
+                
+                <h3>Pontos com Achados Relevantes</h3>
+                <table id="report-table">
+                    <thead>
+                        <tr>
+                            <th>Nervo</th>
+                            <th>Local</th>
+                            <th>Lado</th>
+                            <th>CSA Medida</th>
+                            <th>Achados</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div class="explanation-section" id="explanation-section">
+                    <h3>Interpretação Didática dos Achados</h3>
+                    <div id="explanation-content"></div>
+                </div>
+            </div>
         </div>
 
-        <div id="report-section">
-            <h2>Relatório de Análise Quantitativa</h2>
-            <p class="report-summary" id="report-summary-text"></p>
-            <h3>Pontos com Achados Relevantes</h3>
-            <table id="report-table">
+        <!-- ABA 2: EDITAR PONTOS DE MEDIÇÃO -->
+        <div id="edit-points" class="tab-content">
+            <h2>Gerenciar Pontos de Medição</h2>
+            <table id="points-editor-table">
                 <thead>
-                    <tr>
-                        <th>Nervo</th>
-                        <th>Local</th>
-                        <th>Lado</th>
-                        <th>CSA Medida</th>
-                        <th>Achados</th>
-                    </tr>
+                    <tr><th>Nervo</th><th>Local</th><th>Status</th><th>Ação</th></tr>
                 </thead>
-                <tbody>
-                    <!-- Gerado por JavaScript -->
-                </tbody>
+                <tbody></tbody>
             </table>
-             <p style="font-size: 0.8em; text-align: center; margin-top: 20px;"><i>A interpretação clínica destes achados é de responsabilidade do profissional de saúde.</i></p>
+            <div id="add-point-form">
+                <h3>Incluir Novo Ponto</h3>
+                <input type="text" id="new-nerve" placeholder="Nome do Nervo">
+                <input type="text" id="new-location" placeholder="Local Anatômico">
+                <input type="number" id="new-upper-limit" placeholder="Limite CSA (mm²)">
+                <button class="btn btn-success" onclick="addPoint()">Incluir Ponto</button>
+            </div>
+        </div>
+
+        <!-- ABA 3: EDITAR VALORES DE REFERÊNCIA -->
+        <div id="edit-references" class="tab-content">
+            <h2>Editar Valores de Referência (CSA)</h2>
+            <table id="references-editor-table">
+                <thead>
+                    <tr><th>Nervo</th><th>Local</th><th>Limite Superior (mm²)</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        const protocolData = [
-            // Membros Superiores
-            { nerve: 'Mediano', location: 'Punho', upper_limit: 10 },
-            { nerve: 'Mediano', location: 'Antebraço', upper_limit: 8 },
-            { nerve: 'Mediano', location: 'Cotovelo', upper_limit: 9 },
-            { nerve: 'Mediano', location: 'Braço', upper_limit: 10 },
-            { nerve: 'Ulnar', location: 'Punho (Guyon)', upper_limit: 6 },
-            { nerve: 'Ulnar', location: 'Cotovelo', upper_limit: 10 },
-            { nerve: 'Ulnar', location: 'Braço', upper_limit: 7 },
-            { nerve: 'Radial', location: 'Sulco Espiral', upper_limit: 6 },
-            { nerve: 'Radial', location: 'Antebraço', upper_limit: 4 },
-            // Membros Inferiores
-            { nerve: 'Ciático', location: 'Coxa', upper_limit: 80 },
-            { nerve: 'Tibial', location: 'Fossa Poplítea', upper_limit: 35 },
-            { nerve: 'Tibial', location: 'Tornozelo', upper_limit: 17 },
-            { nerve: 'Fibular Comum', location: 'Cabeça da Fíbula', upper_limit: 12 },
-            { nerve: 'Fibular Profundo', location: 'Tornozelo', upper_limit: 5 },
-            { nerve: 'Fibular Superficial', location: 'Perna', upper_limit: 5 },
-            { nerve: 'Sural', location: 'Perna', upper_limit: 6 },
+        let protocolData = [
+            { id: 1, nerve: 'Mediano', location: 'Punho', upper_limit: 10, enabled: true },
+            { id: 2, nerve: 'Mediano', location: 'Antebraço', upper_limit: 8, enabled: true },
+            { id: 3, nerve: 'Ulnar', location: 'Cotovelo', upper_limit: 10, enabled: true },
+            { id: 4, nerve: 'Ulnar', location: 'Punho (Guyon)', upper_limit: 6, enabled: true },
+            { id: 5, nerve: 'Ulnar', location: 'Antebraço', upper_limit: 7, enabled: true },
+            { id: 6, nerve: 'Radial', location: 'Sulco Espiral', upper_limit: 6, enabled: true },
+            { id: 7, nerve: 'Tibial', location: 'Fossa Poplítea', upper_limit: 35, enabled: true },
+            { id: 8, nerve: 'Tibial', location: 'Tornozelo', upper_limit: 17, enabled: true },
+            { id: 9, nerve: 'Fibular Comum', location: 'Cabeça da Fíbula', upper_limit: 12, enabled: true },
+            { id: 10, nerve: 'Fibular Comum', location: 'Fossa Poplítea', upper_limit: 17, enabled: true },
+            { id: 11, nerve: 'Sural', location: 'Perna', upper_limit: 6, enabled: true },
         ];
+        let nextId = 12;
 
-        document.addEventListener('DOMContentLoaded', () => {
+        const explanations = {
+            thickened: "<strong>Espessamento:</strong> A área de secção transversa (CSA) do nervo ultrapassou o limite superior da normalidade. Este é o principal indicador de edema ou inflamação neural, comum em neuropatias compressivas e desmielinizantes.",
+            asymmetry: "<strong>Assimetria:</strong> A diferença na CSA entre o lado direito e esquerdo para o mesmo ponto anatômico foi significativa. Uma assimetria acentuada pode indicar um problema unilateral (como uma compressão) ou um acometimento assimétrico de uma doença sistêmica.",
+            focal_change: "<strong>Variação Focal:</strong> Houve uma mudança abrupta na área do nervo entre dois pontos de seu trajeto. Um aumento focal acentuado é um forte indicador de um ponto de compressão ou inflamação localizada (ex: inchaço do nervo mediano no punho em relação ao antebraço)."
+        };
+
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if (tabName === 'exam') renderExamTable();
+            if (tabName === 'edit-points') renderPointsEditor();
+            if (tabName === 'edit-references') renderReferencesEditor();
+        }
+
+        function renderExamTable() {
             const tableBody = document.querySelector('#measurements-table tbody');
+            tableBody.innerHTML = '';
+            protocolData.filter(p => p.enabled).forEach(point => {
+                const row = `
+                    <tr>
+                        <td>${point.nerve}</td>
+                        <td>${point.location}</td>
+                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Direito" placeholder="mm²"></td>
+                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Esquerdo" placeholder="mm²"></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderPointsEditor() {
+            const tableBody = document.querySelector('#points-editor-table tbody');
+            tableBody.innerHTML = '';
+            protocolData.forEach(point => {
+                const statusClass = point.enabled ? 'enabled' : 'disabled';
+                const statusText = point.enabled ? 'Habilitado' : 'Desabilitado';
+                const row = `
+                    <tr>
+                        <td>${point.nerve}</td>
+                        <td>${point.location}</td>
+                        <td><span class="toggle-btn ${statusClass}" onclick="togglePoint(${point.id})">${statusText}</span></td>
+                        <td><button class="btn btn-danger" onclick="deletePoint(${point.id})">Excluir</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderReferencesEditor() {
+            const tableBody = document.querySelector('#references-editor-table tbody');
+            tableBody.innerHTML = '';
             protocolData.forEach(point => {
                 const row = `
                     <tr>
                         <td>${point.nerve}</td>
                         <td>${point.location}</td>
-                        <td style="text-align: center;"><input type="number" class="csa-input" data-nerve="${point.nerve}" data-location="${point.location}" data-side="Direito" placeholder="mm²"></td>
-                        <td style="text-align: center;"><input type="number" class="csa-input" data-nerve="${point.nerve}" data-location="${point.location}" data-side="Esquerdo" placeholder="mm²"></td>
+                        <td><input type="number" value="${point.upper_limit}" onchange="updateReference(${point.id}, this.value)"></td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
             });
-        });
+        }
+
+        function togglePoint(id) {
+            const point = protocolData.find(p => p.id === id);
+            if (point) {
+                point.enabled = !point.enabled;
+                renderPointsEditor();
+            }
+        }
+
+        function deletePoint(id) {
+            if (confirm('Tem certeza que deseja excluir este ponto? A ação não pode ser desfeita nesta sessão.')) {
+                protocolData = protocolData.filter(p => p.id !== id);
+                renderPointsEditor();
+            }
+        }
+
+        function addPoint() {
+            const nerve = document.getElementById('new-nerve').value;
+            const location = document.getElementById('new-location').value;
+            const upper_limit = parseFloat(document.getElementById('new-upper-limit').value);
+
+            if (nerve && location && upper_limit) {
+                protocolData.push({ id: nextId++, nerve, location, upper_limit, enabled: true });
+                renderPointsEditor();
+                document.getElementById('new-nerve').value = '';
+                document.getElementById('new-location').value = '';
+                document.getElementById('new-upper-limit').value = '';
+            } else {
+                alert('Por favor, preencha todos os campos para incluir um novo ponto.');
+            }
+        }
+
+        function updateReference(id, value) {
+            const point = protocolData.find(p => p.id === id);
+            if (point) point.upper_limit = parseFloat(value);
+        }
 
         function runAnalysis() {
-            const asymmetryThreshold = parseFloat(document.getElementById('asymmetry-threshold').value);
-            const focalChangeThreshold = parseFloat(document.getElementById('focal-change-threshold').value);
+            const asymmetryThreshold = parseFloat(document.getElementById('asymmetry-threshold')?.value || 2.5);
+            const focalChangeThreshold = parseFloat(document.getElementById('focal-change-threshold')?.value || 50);
             
-            const inputs = document.querySelectorAll('.csa-input');
+            const inputs = document.querySelectorAll('#measurements-table .csa-input');
             let measurements = [];
             inputs.forEach(input => {
                 if (input.value) {
-                    const nerve = input.dataset.nerve;
-                    const location = input.dataset.location;
-                    const side = input.dataset.side;
-                    const protocolPoint = protocolData.find(p => p.nerve === nerve && p.location === location);
-                    
+                    const id = parseInt(input.dataset.id, 10);
+                    const protocolPoint = protocolData.find(p => p.id === id);
                     measurements.push({
-                        nerve: nerve,
-                        location: location,
-                        side: side,
-                        upper_limit: protocolPoint.upper_limit,
+                        ...protocolPoint,
+                        side: input.dataset.side,
                         csa_measured: parseFloat(input.value),
                         findings: []
                     });
                 }
             });
 
-            // Análise de Espessamento
             measurements.forEach(m => {
                 if (m.csa_measured > m.upper_limit) {
                     m.findings.push({ type: 'thickened', text: `Espessado (>${m.upper_limit}mm²)` });
                 }
             });
 
-            // Análise de Assimetria
             const pairs = {};
             measurements.forEach(m => {
                 const key = `${m.nerve}-${m.location}`;
                 if (!pairs[key]) pairs[key] = {};
                 pairs[key][m.side] = m;
             });
-
             for (const key in pairs) {
                 const pair = pairs[key];
                 if (pair.Direito && pair.Esquerdo) {
@@ -263,25 +406,21 @@
                 }
             }
 
-            // Análise de Variação Focal
             const nerveGroups = {};
             measurements.forEach(m => {
                 const key = `${m.nerve}-${m.side}`;
                 if (!nerveGroups[key]) nerveGroups[key] = [];
                 nerveGroups[key].push(m);
             });
-
             for (const key in nerveGroups) {
                 const group = nerveGroups[key];
                 if (group.length >= 2) {
                     const maxMeas = group.reduce((max, m) => m.csa_measured > max.csa_measured ? m : max, group[0]);
                     const minMeas = group.reduce((min, m) => m.csa_measured < min.csa_measured ? m : min, group[0]);
-                    
                     if (minMeas.csa_measured > 0) {
                         const variation = ((maxMeas.csa_measured - minMeas.csa_measured) / minMeas.csa_measured) * 100;
                         if (variation > focalChangeThreshold) {
                             const focalText = `Variação Focal (+${variation.toFixed(0)}%)`;
-                            // Marcar todos os pontos do grupo
                             group.forEach(m => {
                                 if (!m.findings.some(f => f.type === 'focal-change')) {
                                     m.findings.push({ type: 'focal-change', text: focalText });
@@ -299,41 +438,53 @@
             const reportSection = document.getElementById('report-section');
             const reportTableBody = document.querySelector('#report-table tbody');
             const summaryTextElement = document.getElementById('report-summary-text');
+            const explanationContent = document.getElementById('explanation-content');
             
             reportTableBody.innerHTML = ''; 
+            explanationContent.innerHTML = '';
 
             const alteredPoints = analysisResult.filter(m => m.findings.length > 0);
+            const foundFindingTypes = new Set();
 
             if (alteredPoints.length === 0) {
                 summaryTextElement.textContent = "Análise concluída. Nenhum dos parâmetros quantitativos ultrapassou os limiares configurados.";
-                reportSection.style.display = 'block';
                 document.querySelector('#report-table').style.display = 'none';
+                document.getElementById('explanation-section').style.display = 'none';
             } else {
                 document.querySelector('#report-table').style.display = 'table';
-                summaryTextElement.textContent = `Análise concluída. Foram identificados ${alteredPoints.length} ponto(s) de medição com achados relevantes, detalhados abaixo.`;
-
+                document.getElementById('explanation-section').style.display = 'block';
+                summaryTextElement.textContent = `Análise concluída. Foram identificados achados relevantes, detalhados abaixo.`;
+                
                 alteredPoints.forEach(point => {
-                    const findingsHtml = point.findings.map(f => 
-                        `<span class="finding-tag tag-${f.type}">${f.text}</span>`
-                    ).join(' ');
-
+                    point.findings.forEach(f => foundFindingTypes.add(f.type));
+                    const findingsHtml = point.findings.map(f => `<span class="finding-tag tag-${f.type.toLowerCase()}">${f.text}</span>`).join(' ');
                     const row = `
                         <tr>
                             <td>${point.nerve}</td>
                             <td>${point.location}</td>
                             <td>${point.side}</td>
-                            <td class="altered">${point.csa_measured.toFixed(1)} mm²</td>
+                            <td style="font-weight: bold; color: var(--danger-color);">${point.csa_measured.toFixed(1)} mm²</td>
                             <td>${findingsHtml}</td>
                         </tr>
                     `;
                     reportTableBody.innerHTML += row;
                 });
-            }
 
+                foundFindingTypes.forEach(type => {
+                    if (explanations[type]) {
+                        explanationContent.innerHTML += `<div class="explanation-item">${explanations[type]}</div>`;
+                    }
+                });
+            }
             reportSection.style.display = 'block';
             reportSection.scrollIntoView({ behavior: 'smooth' });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            openTab('exam');
+        });
     </script>
 
 </body>
 </html>
+```
