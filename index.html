@@ -1,9 +1,9 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroScan v6.0 - Trial com Escores Clínicos</title>
+    <title>NeuroScan v7.0 - Trial Corrigido com Escores</title>
     <style>
         :root {
             --primary-color: #007BFF;
@@ -145,12 +145,12 @@
 <body>
 
     <div class="container">
-        <h1>NeuroScan v6.0 - Trial com Escores Clínicos</h1>
+        <h1>NeuroScan v7.0 - Trial Corrigido com Escores</h1>
 
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="openTab('exam')">Exame</button>
-            <button class="tab-btn" onclick="openTab('edit-points')">Editar Pontos de Medição</button>
-            <button class="tab-btn" onclick="openTab('edit-references')">Editar Valores de Referência</button>
+            <button class="tab-btn active" onclick="openTab(event, 'exam')">Exame</button>
+            <button class="tab-btn" onclick="openTab(event, 'edit-points')">Editar Pontos de Medição</button>
+            <button class="tab-btn" onclick="openTab(event, 'edit-references')">Editar Valores de Referência</button>
         </div>
 
         <!-- ABA 1: EXAME -->
@@ -204,13 +204,33 @@
             </div>
         </div>
 
-        <!-- OUTRAS ABAS (sem alteração no HTML) -->
-        <div id="edit-points" class="tab-content">...</div>
-        <div id="edit-references" class="tab-content">...</div>
+        <!-- ABA 2: EDITAR PONTOS DE MEDIÇÃO -->
+        <div id="edit-points" class="tab-content">
+            <h2>Gerenciar Pontos de Medição</h2>
+            <table id="points-editor-table">
+                <thead><tr><th>Nervo</th><th>Local</th><th>Status</th><th>Ação</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div id="add-point-form">
+                <h3>Incluir Novo Ponto</h3>
+                <input type="text" id="new-nerve" placeholder="Nome do Nervo">
+                <input type="text" id="new-location" placeholder="Local Anatômico">
+                <input type="number" id="new-upper-limit" placeholder="Limite CSA (mm²)">
+                <button class="btn btn-success" onclick="addPoint()">Incluir Ponto</button>
+            </div>
+        </div>
+
+        <!-- ABA 3: EDITAR VALORES DE REFERÊNCIA -->
+        <div id="edit-references" class="tab-content">
+            <h2>Editar Valores de Referência (CSA)</h2>
+            <table id="references-editor-table">
+                <thead><tr><th>Nervo</th><th>Local</th><th>Limite Superior (mm²)</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // --- BANCO DE DADOS E CONFIGURAÇÕES ---
         let protocolData = [
             { id: 1, nerve: 'Mediano', location: 'Braço', upper_limit: 10, enabled: true },
             { id: 2, nerve: 'Mediano', location: 'Cotovelo', upper_limit: 9, enabled: true },
@@ -233,7 +253,7 @@
             { id: 19, nerve: 'Raiz de C6', location: 'Pescoço', upper_limit: 6, enabled: true },
         ];
         let nextId = 20;
-        let currentAnalysisResult = []; // Armazena o resultado da última análise
+        let currentAnalysisResult = [];
 
         const explanations = {
             thickened: "<strong>Espessamento:</strong> A área de secção transversa (CSA) do nervo ultrapassou o limite superior da normalidade. Este é o principal indicador de edema ou inflamação neural.",
@@ -241,15 +261,104 @@
             focal_change: "<strong>Variação Focal:</strong> Houve uma mudança abrupta na área do nervo entre dois pontos de seu trajeto, um forte indicador de um ponto de compressão ou inflamação localizada."
         };
 
-        // --- LÓGICA DAS ABAS E RENDERIZAÇÃO (sem alterações da v5) ---
-        // (O código das funções openTab, renderExamTable, etc. é omitido aqui para brevidade, mas está no HTML completo abaixo)
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = "none");
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add('active');
+            
+            if (tabName === 'exam') renderExamTable();
+            if (tabName === 'edit-points') renderPointsEditor();
+            if (tabName === 'edit-references') renderReferencesEditor();
+        }
 
-        // --- LÓGICA DE ANÁLISE PRINCIPAL ---
+        function renderExamTable() {
+            const tableBody = document.querySelector('#measurements-table tbody');
+            tableBody.innerHTML = '';
+            protocolData.filter(p => p.enabled).forEach(point => {
+                const row = `
+                    <tr>
+                        <td>${point.nerve}</td>
+                        <td>${point.location}</td>
+                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Direito" placeholder="mm²"></td>
+                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Esquerdo" placeholder="mm²"></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderPointsEditor() {
+            const tableBody = document.querySelector('#points-editor-table tbody');
+            tableBody.innerHTML = '';
+            protocolData.forEach(point => {
+                const statusClass = point.enabled ? 'enabled' : 'disabled';
+                const statusText = point.enabled ? 'Habilitado' : 'Desabilitado';
+                const row = `
+                    <tr>
+                        <td>${point.nerve}</td>
+                        <td>${point.location}</td>
+                        <td><span class="toggle-btn ${statusClass}" onclick="togglePoint(${point.id})">${statusText}</span></td>
+                        <td><button class="btn btn-danger" onclick="deletePoint(${point.id})">Excluir</button></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function renderReferencesEditor() {
+            const tableBody = document.querySelector('#references-editor-table tbody');
+            tableBody.innerHTML = '';
+            protocolData.forEach(point => {
+                const row = `
+                    <tr>
+                        <td>${point.nerve}</td>
+                        <td>${point.location}</td>
+                        <td><input type="number" value="${point.upper_limit}" onchange="updateReference(${point.id}, this.value)"></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function togglePoint(id) {
+            const point = protocolData.find(p => p.id === id);
+            if (point) {
+                point.enabled = !point.enabled;
+                renderPointsEditor();
+            }
+        }
+
+        function deletePoint(id) {
+            if (confirm('Tem certeza que deseja excluir este ponto? A ação não pode ser desfeita nesta sessão.')) {
+                protocolData = protocolData.filter(p => p.id !== id);
+                renderPointsEditor();
+            }
+        }
+
+        function addPoint() {
+            const nerve = document.getElementById('new-nerve').value;
+            const location = document.getElementById('new-location').value;
+            const upper_limit = parseFloat(document.getElementById('new-upper-limit').value);
+
+            if (nerve && location && upper_limit) {
+                protocolData.push({ id: nextId++, nerve, location, upper_limit, enabled: true });
+                renderPointsEditor();
+                document.getElementById('new-nerve').value = '';
+                document.getElementById('new-location').value = '';
+                document.getElementById('new-upper-limit').value = '';
+            } else {
+                alert('Por favor, preencha todos os campos para incluir um novo ponto.');
+            }
+        }
+
+        function updateReference(id, value) {
+            const point = protocolData.find(p => p.id === id);
+            if (point) point.upper_limit = parseFloat(value);
+        }
+
         function runAnalysis() {
-            // ... (Lógica de análise da v5 permanece a mesma) ...
-            // A única mudança é salvar o resultado globalmente
-            const measurements = performAnalysis(); // Função de análise foi extraída
-            currentAnalysisResult = measurements; // Salva para uso posterior
+            currentAnalysisResult = performAnalysis();
             generateReport(currentAnalysisResult);
         }
 
@@ -324,7 +433,6 @@
             return measurements;
         }
 
-        // --- NOVA FUNÇÃO PARA CALCULAR ESCORES ---
         function calculateScores() {
             if (currentAnalysisResult.length === 0) {
                 alert("Por favor, preencha os dados e gere o relatório primeiro.");
@@ -341,7 +449,6 @@
                 }
             });
 
-            // Lógica Simplificada do UPSS: 1 ponto por local espessado, 2 por raiz
             thickenedPoints.forEach(pointKey => {
                 if (pointKey.startsWith('Raiz')) {
                     upssScore += 2;
@@ -350,7 +457,6 @@
                 }
             });
 
-            // Lógica Simplificada do Bochum: Pontua se locais específicos estão espessados
             if (thickenedPoints.has('Mediano-Punho (Pré-Retináculo)')) bochumScore++;
             if (thickenedPoints.has('Ulnar-Cotovelo')) bochumScore++;
             if (thickenedPoints.has('Radial-Sulco Espiral')) bochumScore++;
@@ -358,7 +464,6 @@
             if (thickenedPoints.has('Sural-Perna')) bochumScore++;
             if (thickenedPoints.has('Raiz de C5-Pescoço') || thickenedPoints.has('Raiz de C6-Pescoço')) bochumScore++;
 
-            // Exibir os resultados
             const scoresContent = document.getElementById('scores-content');
             scoresContent.innerHTML = `
                 <div class="score-item">
@@ -375,14 +480,12 @@
             document.getElementById('scores-section').style.display = 'block';
         }
 
-        // --- GERAÇÃO DO RELATÓRIO (ATUALIZADA) ---
         function generateReport(analysisResult) {
             const reportSection = document.getElementById('report-section');
             const reportTableBody = document.querySelector('#report-table tbody');
             const summaryTextElement = document.getElementById('report-summary-text');
             const explanationContent = document.getElementById('explanation-content');
             
-            // Resetar seções
             reportTableBody.innerHTML = ''; 
             explanationContent.innerHTML = '';
             document.getElementById('scores-section').style.display = 'none';
@@ -424,108 +527,11 @@
             reportSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // --- INICIALIZAÇÃO E CÓDIGO DAS ABAS (para garantir que o HTML omitido esteja aqui) ---
         document.addEventListener('DOMContentLoaded', () => {
-            const editPointsContent = `
-                <h2>Gerenciar Pontos de Medição</h2>
-                <table id="points-editor-table">
-                    <thead><tr><th>Nervo</th><th>Local</th><th>Status</th><th>Ação</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <div id="add-point-form">
-                    <h3>Incluir Novo Ponto</h3>
-                    <input type="text" id="new-nerve" placeholder="Nome do Nervo">
-                    <input type="text" id="new-location" placeholder="Local Anatômico">
-                    <input type="number" id="new-upper-limit" placeholder="Limite CSA (mm²)">
-                    <button class="btn btn-success" onclick="addPoint()">Incluir Ponto</button>
-                </div>`;
-            document.getElementById('edit-points').innerHTML = editPointsContent;
-
-            const editReferencesContent = `
-                <h2>Editar Valores de Referência (CSA)</h2>
-                <table id="references-editor-table">
-                    <thead><tr><th>Nervo</th><th>Local</th><th>Limite Superior (mm²)</th></tr></thead>
-                    <tbody></tbody>
-                </table>`;
-            document.getElementById('edit-references').innerHTML = editReferencesContent;
-
-            openTab('exam');
+            // Simula o clique na primeira aba para carregar o conteúdo inicial
+            document.querySelector('.tab-btn').click();
         });
-        // (O resto do código JS já está no corpo do script)
-    </script>
-    <!-- O resto do código JS já está dentro da tag <script> principal -->
-    <script>
-        // Funções de edição e renderização das abas (código da v5)
-        function togglePoint(id) {
-            const point = protocolData.find(p => p.id === id);
-            if (point) {
-                point.enabled = !point.enabled;
-                renderPointsEditor();
-            }
-        }
-
-        function deletePoint(id) {
-            if (confirm('Tem certeza que deseja excluir este ponto? A ação não pode ser desfeita nesta sessão.')) {
-                protocolData = protocolData.filter(p => p.id !== id);
-                renderPointsEditor();
-            }
-        }
-
-        function addPoint() {
-            const nerve = document.getElementById('new-nerve').value;
-            const location = document.getElementById('new-location').value;
-            const upper_limit = parseFloat(document.getElementById('new-upper-limit').value);
-
-            if (nerve && location && upper_limit) {
-                protocolData.push({ id: nextId++, nerve, location, upper_limit, enabled: true });
-                renderPointsEditor();
-                document.getElementById('new-nerve').value = '';
-                document.getElementById('new-location').value = '';
-                document.getElementById('new-upper-limit').value = '';
-            } else {
-                alert('Por favor, preencha todos os campos para incluir um novo ponto.');
-            }
-        }
-
-        function updateReference(id, value) {
-            const point = protocolData.find(p => p.id === id);
-            if (point) point.upper_limit = parseFloat(value);
-        }
-        
-        function renderPointsEditor() {
-            const tableBody = document.querySelector('#points-editor-table tbody');
-            tableBody.innerHTML = '';
-            protocolData.forEach(point => {
-                const statusClass = point.enabled ? 'enabled' : 'disabled';
-                const statusText = point.enabled ? 'Habilitado' : 'Desabilitado';
-                const row = `
-                    <tr>
-                        <td>${point.nerve}</td>
-                        <td>${point.location}</td>
-                        <td><span class="toggle-btn ${statusClass}" onclick="togglePoint(${point.id})">${statusText}</span></td>
-                        <td><button class="btn btn-danger" onclick="deletePoint(${point.id})">Excluir</button></td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
-
-        function renderReferencesEditor() {
-            const tableBody = document.querySelector('#references-editor-table tbody');
-            tableBody.innerHTML = '';
-            protocolData.forEach(point => {
-                const row = `
-                    <tr>
-                        <td>${point.nerve}</td>
-                        <td>${point.location}</td>
-                        <td><input type="number" value="${point.upper_limit}" onchange="updateReference(${point.id}, this.value)"></td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
     </script>
 
 </body>
 </html>
-   
