@@ -3,263 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroScan v7.0 - Trial Corrigido com Escores</title>
+    <title>NeuroScan v9.0 - Trial com Referências Clínicas</title>
     <style>
         :root {
-            --primary-color: #007BFF;
-            --secondary-color: #6c757d;
-            --background-color: #f8f9fa;
-            --text-color: #343A40;
-            --danger-color: #DC3545;
-            --warning-color: #FFC107;
-            --info-color: #17A2B8;
-            --success-color: #28A745;
-            --border-color: #dee2e6;
+            --primary-color: #007BFF; --secondary-color: #6c757d; --background-color: #f8f9fa;
+            --text-color: #343A40; --danger-color: #DC3545; --warning-color: #FFC107;
+            --info-color: #17A2B8; --success-color: #28A745; --border-color: #dee2e6;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
+            background-color: var(--background-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 20px;
         }
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        h1, h2, h3 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-        .tab-navigation {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 30px;
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 1.1em;
-            color: var(--secondary-color);
-            border-bottom: 3px solid transparent;
-        }
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            font-weight: bold;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        input[type="text"], input[type="number"] {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            font-size: 1em;
-        }
-        .btn {
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            color: white;
-        }
+        .container { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h1, h2, h3 { color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-top: 0; }
+        .tab-navigation { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 15px; cursor: pointer; border: none; background: none; font-size: 1em; color: var(--secondary-color); border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f2f2f2; }
+        input[type="text"], input[type="number"], select { padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); font-size: 1em; }
+        .btn { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
         .btn-danger { background-color: var(--danger-color); }
         .btn-success { background-color: var(--success-color); }
         .btn-main { background-color: var(--primary-color); }
         .btn-secondary { background-color: var(--secondary-color); }
-        .toggle-btn {
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 15px;
-            color: white;
-            font-size: 0.8em;
-        }
+        .toggle-btn { cursor: pointer; padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8em; }
         .toggle-btn.enabled { background-color: var(--success-color); }
         .toggle-btn.disabled { background-color: var(--secondary-color); }
-        #add-point-form {
-            margin-top: 30px;
-            padding: 20px;
-            border: 1px dashed var(--border-color);
-            border-radius: 5px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        /* Estilos do Relatório */
+        .form-group { margin-top: 20px; padding: 20px; border: 1px dashed var(--border-color); border-radius: 5px; }
+        /* Estilos do Relatório e Modal */
         #report-section { display:none; margin-top: 30px; }
-        .report-summary { font-style: italic; }
-        .finding-tag {
-            display: inline-block; padding: 3px 8px; border-radius: 12px;
-            font-size: 0.8em; margin-left: 10px; color: white;
-        }
+        .finding-tag { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; margin: 2px; color: white; }
         .tag-thickened { background-color: var(--danger-color); }
         .tag-asymmetry { background-color: var(--warning-color); color: #333; }
         .tag-focal-change { background-color: var(--info-color); }
-        .explanation-section, .scores-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px dashed var(--border-color);
+        .explanation-section, .scores-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
+        .explanation-item, .score-item { margin-bottom: 15px; }
+        .explanation-item strong, .score-item strong { color: var(--primary-color); }
+        .score-value { font-size: 1.5em; font-weight: bold; color: var(--danger-color); margin-left: 10px; }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.5);
         }
-        .explanation-item, .score-item {
-            margin-bottom: 15px;
+        .modal-content {
+            background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888;
+            width: 80%; max-width: 500px; border-radius: 8px; text-align: center;
         }
-        .explanation-item strong, .score-item strong {
-            color: var(--primary-color);
-        }
-        .score-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--danger-color);
-            margin-left: 10px;
-        }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>NeuroScan v7.0 - Trial Corrigido com Escores</h1>
+        <h1>NeuroScan v9.0 - Trial com Referências Clínicas</h1>
 
         <div class="tab-navigation">
             <button class="tab-btn active" onclick="openTab(event, 'exam')">Exame</button>
-            <button class="tab-btn" onclick="openTab(event, 'edit-points')">Editar Pontos de Medição</button>
-            <button class="tab-btn" onclick="openTab(event, 'edit-references')">Editar Valores de Referência</button>
+            <button class="tab-btn" onclick="openTab(event, 'protocols')">Protocolos</button>
+            <button class="tab-btn" onclick="openTab(event, 'atlas')">Atlas de Medição</button>
+            <button class="tab-btn" onclick="openTab(event, 'edit-points')">Pontos de Medição</button>
+            <button class="tab-btn" onclick="openTab(event, 'edit-references')">Valores de Referência</button>
         </div>
 
         <!-- ABA 1: EXAME -->
         <div id="exam" class="tab-content active">
-            <h2>Entrada de Dados do Exame</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Entrada de Dados do Exame</h2>
+                <div>
+                    <label for="protocol-selector">Carregar Protocolo:</label>
+                    <select id="protocol-selector" onchange="loadProtocol()"></select>
+                </div>
+            </div>
             <p>Preencha os valores de CSA (mm²). Apenas os pontos habilitados são exibidos.</p>
             <table id="measurements-table">
-                <thead>
-                    <tr>
-                        <th>Nervo</th>
-                        <th>Local</th>
-                        <th style="text-align: center;">CSA Direita (mm²)</th>
-                        <th style="text-align: center;">CSA Esquerda (mm²)</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Nervo</th><th>Local</th><th style="text-align: center;">CSA Direita (mm²)</th><th style="text-align: center;">CSA Esquerda (mm²)</th></tr></thead>
                 <tbody></tbody>
             </table>
             <button class="btn btn-main" style="width: 100%; padding: 12px; font-size: 1.1em;" onclick="runAnalysis()">Analisar e Gerar Relatório</button>
-            
             <div id="report-section">
                 <h2>Relatório de Análise Quantitativa</h2>
                 <p id="report-summary-text"></p>
-                
                 <h3>Pontos com Achados Relevantes</h3>
                 <table id="report-table">
-                    <thead>
-                        <tr>
-                            <th>Nervo</th>
-                            <th>Local</th>
-                            <th>Lado</th>
-                            <th>CSA Medida</th>
-                            <th>Achados</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Nervo</th><th>Local</th><th>Lado</th><th>CSA Medida</th><th>Achados</th></tr></thead>
                     <tbody></tbody>
                 </table>
-
                 <div class="scores-section" id="scores-section" style="display: none;">
                     <h3>Escores Clínicos (Simulação)</h3>
                     <div id="scores-content"></div>
                 </div>
-
                 <div class="explanation-section" id="explanation-section">
                     <h3>Interpretação Didática dos Achados</h3>
                     <div id="explanation-content"></div>
                 </div>
-
-                <div id="scores-footer" style="margin-top: 20px; text-align: center;">
+                <div id="report-footer" style="margin-top: 30px; display: flex; justify-content: space-around;">
                     <button class="btn btn-secondary" onclick="calculateScores()">Calcular Escores UPSS & Bochum</button>
+                    <button class="btn btn-success" onclick="showNeuroExpertModal()">Analisar com NeuroExpert</button>
                 </div>
             </div>
         </div>
 
-        <!-- ABA 2: EDITAR PONTOS DE MEDIÇÃO -->
-        <div id="edit-points" class="tab-content">
-            <h2>Gerenciar Pontos de Medição</h2>
-            <table id="points-editor-table">
-                <thead><tr><th>Nervo</th><th>Local</th><th>Status</th><th>Ação</th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <div id="add-point-form">
-                <h3>Incluir Novo Ponto</h3>
-                <input type="text" id="new-nerve" placeholder="Nome do Nervo">
-                <input type="text" id="new-location" placeholder="Local Anatômico">
-                <input type="number" id="new-upper-limit" placeholder="Limite CSA (mm²)">
-                <button class="btn btn-success" onclick="addPoint()">Incluir Ponto</button>
-            </div>
-        </div>
+        <!-- OUTRAS ABAS (HTML omitido para brevidade, mas está no JS) -->
+        <div id="protocols" class="tab-content"></div>
+        <div id="atlas" class="tab-content"></div>
+        <div id="edit-points" class="tab-content"></div>
+        <div id="edit-references" class="tab-content"></div>
+    </div>
 
-        <!-- ABA 3: EDITAR VALORES DE REFERÊNCIA -->
-        <div id="edit-references" class="tab-content">
-            <h2>Editar Valores de Referência (CSA)</h2>
-            <table id="references-editor-table">
-                <thead><tr><th>Nervo</th><th>Local</th><th>Limite Superior (mm²)</th></tr></thead>
-                <tbody></tbody>
-            </table>
+    <!-- MODAL NEUROEXPERT -->
+    <div id="neuroExpertModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeNeuroExpertModal()">&times;</span>
+            <h3>Integração com NeuroExpert</h3>
+            <p>Os dados quantitativos e achados do relatório foram enviados para análise avançada por Inteligência Artificial.</p>
+            <p style="font-size: 0.9em; color: var(--secondary-color);">(Esta é uma simulação. A funcionalidade completa estará disponível na versão final do produto.)</p>
         </div>
     </div>
 
     <script>
+        // --- BANCO DE DADOS EM MEMÓRIA (ATUALIZADO) ---
         let protocolData = [
-            { id: 1, nerve: 'Mediano', location: 'Braço', upper_limit: 10, enabled: true },
-            { id: 2, nerve: 'Mediano', location: 'Cotovelo', upper_limit: 9, enabled: true },
-            { id: 3, nerve: 'Mediano', location: 'Antebraço', upper_limit: 8, enabled: true },
-            { id: 4, nerve: 'Mediano', location: 'Pronador Quadrado', upper_limit: 8, enabled: true },
-            { id: 5, nerve: 'Mediano', location: 'Punho (Pré-Retináculo)', upper_limit: 10, enabled: true },
-            { id: 6, nerve: 'Mediano', location: 'Punho (Pós-Retináculo)', upper_limit: 10, enabled: true },
-            { id: 7, nerve: 'Ulnar', location: 'Braço', upper_limit: 7, enabled: true },
-            { id: 8, nerve: 'Ulnar', location: 'Cotovelo', upper_limit: 10, enabled: true },
-            { id: 9, nerve: 'Ulnar', location: 'Antebraço', upper_limit: 7, enabled: true },
-            { id: 10, nerve: 'Ulnar', location: 'Guyon', upper_limit: 6, enabled: true },
-            { id: 11, nerve: 'Radial', location: 'Sulco Espiral', upper_limit: 6, enabled: true },
-            { id: 12, nerve: 'Tibial', location: 'Fossa Poplítea', upper_limit: 35, enabled: true },
-            { id: 13, nerve: 'Tibial', location: 'Tarso', upper_limit: 17, enabled: true },
-            { id: 14, nerve: 'Fibular Comum', location: 'Fossa Poplítea', upper_limit: 17, enabled: true },
-            { id: 15, nerve: 'Fibular Comum', location: 'Cabeça da Fíbula', upper_limit: 12, enabled: true },
-            { id: 16, nerve: 'Sural', location: 'Perna', upper_limit: 6, enabled: true },
-            { id: 17, nerve: 'Vago', location: 'Pescoço', upper_limit: 4, enabled: true },
-            { id: 18, nerve: 'Raiz de C5', location: 'Pescoço', upper_limit: 4, enabled: true },
-            { id: 19, nerve: 'Raiz de C6', location: 'Pescoço', upper_limit: 6, enabled: true },
+            // Mediano
+            { id: 1, nerve: 'Mediano', location: 'Túnel do Carpo', upper_limit: 10, enabled: true },
+            { id: 2, nerve: 'Mediano', location: 'Antebraço', upper_limit: 10, enabled: true },
+            { id: 3, nerve: 'Mediano', location: 'Fossa Cubital', upper_limit: 11, enabled: true },
+            { id: 4, nerve: 'Mediano', location: 'Braço', upper_limit: 15, enabled: true },
+            // Ulnar
+            { id: 5, nerve: 'Ulnar', location: 'Canal de Guyon', upper_limit: 6, enabled: true },
+            { id: 6, nerve: 'Ulnar', location: 'Antebraço', upper_limit: 7, enabled: true },
+            { id: 7, nerve: 'Ulnar', location: 'Região Cubital', upper_limit: 10, enabled: true },
+            { id: 8, nerve: 'Ulnar', location: 'Braço', upper_limit: 11, enabled: true },
+            // Radial
+            { id: 9, nerve: 'Radial', location: 'Sulco Espiral', upper_limit: 6.8, enabled: true },
+            // Membros Inferiores
+            { id: 10, nerve: 'Fibular Comum', location: 'Cabeça da Fíbula', upper_limit: 21, enabled: true },
+            { id: 11, nerve: 'Fibular Comum', location: 'Coxa', upper_limit: 21, enabled: true },
+            { id: 12, nerve: 'Tibial', location: 'Fossa Poplítea', upper_limit: 33, enabled: true },
+            { id: 13, nerve: 'Tibial', location: 'Tarso', upper_limit: 15, enabled: true },
+            { id: 14, nerve: 'Sural', location: 'Panturrilha', upper_limit: 4, enabled: true },
+            // Nervos Adicionais
+            { id: 15, nerve: 'Vago', location: 'Bainha Carotídea', upper_limit: 3.5, enabled: true },
+            { id: 16, nerve: 'Raiz C5', location: 'Pescoço', upper_limit: 5, enabled: true },
+            { id: 17, nerve: 'Raiz C6', location: 'Pescoço', upper_limit: 6, enabled: true },
         ];
-        let nextId = 20;
+        let nextId = 18;
         let currentAnalysisResult = [];
-
-        const explanations = {
-            thickened: "<strong>Espessamento:</strong> A área de secção transversa (CSA) do nervo ultrapassou o limite superior da normalidade. Este é o principal indicador de edema ou inflamação neural.",
-            asymmetry: "<strong>Assimetria:</strong> A diferença na CSA entre o lado direito e esquerdo para o mesmo ponto anatômico foi significativa, sugerindo um processo unilateral ou assimétrico.",
-            focal_change: "<strong>Variação Focal:</strong> Houve uma mudança abrupta na área do nervo entre dois pontos de seu trajeto, um forte indicador de um ponto de compressão ou inflamação localizada."
+        let savedProtocols = {
+            "Todos os Pontos": protocolData.map(p => p.id),
+            "Membros Superiores": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            "Membros Inferiores": [10, 11, 12, 13, 14]
         };
+        const atlasEntries = {
+            "Mediano - Túnel do Carpo": {
+                img: "https://i.imgur.com/8aZ3d1W.png",
+                text: "Posicione o transdutor transversalmente sobre a prega do punho, entre os tendões dos músculos flexor radial do carpo e palmar longo. O nervo mediano é uma estrutura oval ou em favo de mel superficial aos tendões flexores."
+            },
+            "Ulnar - Região Cubital": {
+                img: "https://i.imgur.com/sC3f8gH.png",
+                text: "Avalie o nervo ulnar no sulco cubital, localizado posteriormente ao epicôndilo medial do úmero. Realize a medição com o cotovelo em leve flexão para evitar subestimação da área por anisotropia."
+            }
+        };
+
+        // --- LÓGICA DE NAVEGAÇÃO E INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', ( ) => {
+            // Injeta o HTML das abas que foram omitidas
+            document.getElementById('protocols').innerHTML = `<h2>Gerenciar Protocolos de Exame</h2><div class="form-group"><h3>Criar Novo Protocolo</h3><input type="text" id="new-protocol-name" placeholder="Nome do Novo Protocolo"><div id="protocol-points-checklist" style="margin-top: 15px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px;"></div><button class="btn btn-success" style="margin-top: 15px;" onclick="saveProtocol()">Salvar Protocolo</button></div><h3>Protocolos Salvos</h3><ul id="saved-protocols-list"></ul>`;
+            document.getElementById('atlas').innerHTML = `<h2>Atlas de Medição (Simulação)</h2><select id="atlas-selector" onchange="showAtlasEntry()"></select><div id="atlas-content" style="margin-top: 20px; text-align: center;"></div>`;
+            document.getElementById('edit-points').innerHTML = `<h2>Gerenciar Pontos de Medição</h2><table id="points-editor-table"><thead><tr><th>Nervo</th><th>Local</th><th>Status</th><th>Ação</th></tr></thead><tbody></tbody></table><div class="form-group"><h3>Incluir Novo Ponto</h3><input type="text" id="new-nerve" placeholder="Nome do Nervo"><input type="text" id="new-location" placeholder="Local Anatômico"><input type="number" id="new-upper-limit" placeholder="Limite CSA (mm²)" step="0.1"><button class="btn btn-success" onclick="addPoint()">Incluir Ponto</button></div>`;
+            document.getElementById('edit-references').innerHTML = `<h2>Editar Valores de Referência (CSA)</h2><table id="references-editor-table"><thead><tr><th>Nervo</th><th>Local</th><th>Limite Superior (mm²)</th></tr></thead><tbody></tbody></table>`;
+            
+            // Simula o clique na primeira aba para carregar o conteúdo inicial
+            document.querySelector('.tab-btn').click();
+        });
 
         function openTab(evt, tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = "none");
@@ -268,24 +186,41 @@
             evt.currentTarget.classList.add('active');
             
             if (tabName === 'exam') renderExamTable();
+            if (tabName === 'protocols') renderProtocolsTab();
+            if (tabName === 'atlas') renderAtlasTab();
             if (tabName === 'edit-points') renderPointsEditor();
             if (tabName === 'edit-references') renderReferencesEditor();
         }
 
-        function renderExamTable() {
+        // --- RENDERIZAÇÃO DAS ABAS ---
+        function renderExamTable(pointIds = null) {
             const tableBody = document.querySelector('#measurements-table tbody');
             tableBody.innerHTML = '';
-            protocolData.filter(p => p.enabled).forEach(point => {
-                const row = `
-                    <tr>
-                        <td>${point.nerve}</td>
-                        <td>${point.location}</td>
-                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Direito" placeholder="mm²"></td>
-                        <td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Esquerdo" placeholder="mm²"></td>
-                    </tr>
-                `;
+            const pointsToRender = pointIds ? protocolData.filter(p => pointIds.includes(p.id)) : protocolData.filter(p => p.enabled);
+            
+            pointsToRender.forEach(point => {
+                const row = `<tr><td>${point.nerve}</td><td>${point.location}</td><td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Direito" placeholder="mm²" step="0.1"></td><td style="text-align: center;"><input type="number" class="csa-input" data-id="${point.id}" data-side="Esquerdo" placeholder="mm²" step="0.1"></td></tr>`;
                 tableBody.innerHTML += row;
             });
+            renderProtocolSelector();
+        }
+
+        function renderProtocolsTab() {
+            const checklist = document.getElementById('protocol-points-checklist');
+            checklist.innerHTML = '';
+            protocolData.forEach(p => {
+                checklist.innerHTML += `<div><input type="checkbox" id="proto-point-${p.id}" value="${p.id}"> <label for="proto-point-${p.id}">${p.nerve} - ${p.location}</label></div>`;
+            });
+            renderSavedProtocolsList();
+        }
+
+        function renderAtlasTab() {
+            const selector = document.getElementById('atlas-selector');
+            selector.innerHTML = '<option value="">Selecione um ponto...</option>';
+            Object.keys(atlasEntries).forEach(key => {
+                selector.innerHTML += `<option value="${key}">${key}</option>`;
+            });
+            document.getElementById('atlas-content').innerHTML = '';
         }
 
         function renderPointsEditor() {
@@ -294,14 +229,7 @@
             protocolData.forEach(point => {
                 const statusClass = point.enabled ? 'enabled' : 'disabled';
                 const statusText = point.enabled ? 'Habilitado' : 'Desabilitado';
-                const row = `
-                    <tr>
-                        <td>${point.nerve}</td>
-                        <td>${point.location}</td>
-                        <td><span class="toggle-btn ${statusClass}" onclick="togglePoint(${point.id})">${statusText}</span></td>
-                        <td><button class="btn btn-danger" onclick="deletePoint(${point.id})">Excluir</button></td>
-                    </tr>
-                `;
+                const row = `<tr><td>${point.nerve}</td><td>${point.location}</td><td><span class="toggle-btn ${statusClass}" onclick="togglePoint(${point.id})">${statusText}</span></td><td><button class="btn btn-danger btn-sm" onclick="deletePoint(${point.id})">Excluir</button></td></tr>`;
                 tableBody.innerHTML += row;
             });
         }
@@ -310,227 +238,149 @@
             const tableBody = document.querySelector('#references-editor-table tbody');
             tableBody.innerHTML = '';
             protocolData.forEach(point => {
-                const row = `
-                    <tr>
-                        <td>${point.nerve}</td>
-                        <td>${point.location}</td>
-                        <td><input type="number" value="${point.upper_limit}" onchange="updateReference(${point.id}, this.value)"></td>
-                    </tr>
-                `;
+                const row = `<tr><td>${point.nerve}</td><td>${point.location}</td><td><input type="number" value="${point.upper_limit}" onchange="updateReference(${point.id}, this.value)" step="0.1"></td></tr>`;
                 tableBody.innerHTML += row;
             });
         }
 
-        function togglePoint(id) {
-            const point = protocolData.find(p => p.id === id);
-            if (point) {
-                point.enabled = !point.enabled;
-                renderPointsEditor();
-            }
+        // --- LÓGICA DOS PROTOCOLOS ---
+        function renderProtocolSelector() {
+            const selector = document.getElementById('protocol-selector');
+            selector.innerHTML = '';
+            Object.keys(savedProtocols).forEach(name => {
+                selector.innerHTML += `<option value="${name}">${name}</option>`;
+            });
         }
 
-        function deletePoint(id) {
-            if (confirm('Tem certeza que deseja excluir este ponto? A ação não pode ser desfeita nesta sessão.')) {
-                protocolData = protocolData.filter(p => p.id !== id);
-                renderPointsEditor();
-            }
+        function renderSavedProtocolsList() {
+            const list = document.getElementById('saved-protocols-list');
+            list.innerHTML = '';
+            Object.keys(savedProtocols).forEach(name => {
+                list.innerHTML += `<li>${name} <button class="btn btn-danger btn-sm" onclick="deleteProtocol('${name}')">Excluir</button></li>`;
+            });
         }
 
-        function addPoint() {
-            const nerve = document.getElementById('new-nerve').value;
-            const location = document.getElementById('new-location').value;
-            const upper_limit = parseFloat(document.getElementById('new-upper-limit').value);
-
-            if (nerve && location && upper_limit) {
-                protocolData.push({ id: nextId++, nerve, location, upper_limit, enabled: true });
-                renderPointsEditor();
-                document.getElementById('new-nerve').value = '';
-                document.getElementById('new-location').value = '';
-                document.getElementById('new-upper-limit').value = '';
-            } else {
-                alert('Por favor, preencha todos os campos para incluir um novo ponto.');
-            }
-        }
-
-        function updateReference(id, value) {
-            const point = protocolData.find(p => p.id === id);
-            if (point) point.upper_limit = parseFloat(value);
-        }
-
-        function runAnalysis() {
-            currentAnalysisResult = performAnalysis();
-            generateReport(currentAnalysisResult);
-        }
-
-        function performAnalysis() {
-            const asymmetryThreshold = 2.5;
-            const focalChangeThreshold = 50;
+        function saveProtocol() {
+            const name = document.getElementById('new-protocol-name').value;
+            if (!name) { alert("Por favor, dê um nome ao protocolo."); return; }
+            const selectedPoints = Array.from(document.querySelectorAll('#protocol-points-checklist input:checked')).map(cb => parseInt(cb.value));
+            if (selectedPoints.length === 0) { alert("Selecione ao menos um ponto para o protocolo."); return; }
             
-            const inputs = document.querySelectorAll('#measurements-table .csa-input');
+            savedProtocols[name] = selectedPoints;
+            renderSavedProtocolsList();
+            document.getElementById('new-protocol-name').value = '';
+            alert(`Protocolo "${name}" salvo com sucesso!`);
+        }
+
+        function deleteProtocol(name) {
+            if (confirm(`Tem certeza que deseja excluir o protocolo "${name}"?`)) {
+                delete savedProtocols[name];
+                renderSavedProtocolsList();
+                renderProtocolSelector();
+            }
+        }
+
+        function loadProtocol() {
+            const name = document.getElementById('protocol-selector').value;
+            const pointIds = savedProtocols[name];
+            renderExamTable(pointIds);
+        }
+
+        // --- LÓGICA DO ATLAS ---
+        function showAtlasEntry() {
+            const key = document.getElementById('atlas-selector').value;
+            const contentDiv = document.getElementById('atlas-content');
+            if (!key) {
+                contentDiv.innerHTML = '';
+                return;
+            }
+            const entry = atlasEntries[key];
+            contentDiv.innerHTML = `<h3>${key}</h3><img src="${entry.img}" alt="Imagem do Atlas para ${key}" style="max-width: 100%; border: 1px solid var(--border-color);"><p>${entry.text}</p>`;
+        }
+
+        // --- LÓGICA DO MODAL ---
+        function showNeuroExpertModal() { document.getElementById('neuroExpertModal').style.display = 'block'; }
+        function closeNeuroExpertModal() { document.getElementById('neuroExpertModal').style.display = 'none'; }
+
+        // --- LÓGICA DE ANÁLISE E ESCORES ---
+        function runAnalysis() { currentAnalysisResult = performAnalysis(); generateReport(currentAnalysisResult); }
+        function performAnalysis() {
+            const asymmetryThreshold = 2.5, focalChangeThreshold = 50;
             let measurements = [];
-            inputs.forEach(input => {
+            document.querySelectorAll('#measurements-table .csa-input').forEach(input => {
                 if (input.value) {
-                    const id = parseInt(input.dataset.id, 10);
-                    const protocolPoint = protocolData.find(p => p.id === id);
-                    measurements.push({
-                        ...protocolPoint,
-                        side: input.dataset.side,
-                        csa_measured: parseFloat(input.value),
-                        findings: []
-                    });
+                    const id = parseInt(input.dataset.id, 10), protocolPoint = protocolData.find(p => p.id === id);
+                    measurements.push({ ...protocolPoint, side: input.dataset.side, csa_measured: parseFloat(input.value), findings: [] });
                 }
             });
-
-            measurements.forEach(m => {
-                if (m.csa_measured > m.upper_limit) {
-                    m.isThickened = true;
-                    m.findings.push({ type: 'thickened', text: `Espessado (>${m.upper_limit}mm²)` });
-                }
-            });
-
+            measurements.forEach(m => { if (m.csa_measured > m.upper_limit) { m.isThickened = true; m.findings.push({ type: 'thickened', text: `Espessado (>${m.upper_limit}mm²)` }); } });
             const pairs = {};
-            measurements.forEach(m => {
-                const key = `${m.nerve}-${m.location}`;
-                if (!pairs[key]) pairs[key] = {};
-                pairs[key][m.side] = m;
-            });
+            measurements.forEach(m => { const key = `${m.nerve}-${m.location}`; if (!pairs[key]) pairs[key] = {}; pairs[key][m.side] = m; });
             for (const key in pairs) {
                 const pair = pairs[key];
                 if (pair.Direito && pair.Esquerdo) {
                     const diff = Math.abs(pair.Direito.csa_measured - pair.Esquerdo.csa_measured);
-                    if (diff > asymmetryThreshold) {
-                        const asymmetryText = `Assimetria (${diff.toFixed(1)}mm²)`;
-                        pair.Direito.findings.push({ type: 'asymmetry', text: asymmetryText });
-                        pair.Esquerdo.findings.push({ type: 'asymmetry', text: asymmetryText });
-                    }
+                    if (diff > asymmetryThreshold) { const text = `Assimetria (${diff.toFixed(1)}mm²)`; pair.Direito.findings.push({ type: 'asymmetry', text }); pair.Esquerdo.findings.push({ type: 'asymmetry', text }); }
                 }
             }
-
             const nerveGroups = {};
-            measurements.forEach(m => {
-                const key = `${m.nerve}-${m.side}`;
-                if (!nerveGroups[key]) nerveGroups[key] = [];
-                nerveGroups[key].push(m);
-            });
+            measurements.forEach(m => { const key = `${m.nerve}-${m.side}`; if (!nerveGroups[key]) nerveGroups[key] = []; nerveGroups[key].push(m); });
             for (const key in nerveGroups) {
                 const group = nerveGroups[key];
                 if (group.length >= 2) {
-                    const maxMeas = group.reduce((max, m) => m.csa_measured > max.csa_measured ? m : max, group[0]);
-                    const minMeas = group.reduce((min, m) => m.csa_measured < min.csa_measured ? m : min, group[0]);
-                    if (minMeas.csa_measured > 0) {
-                        const variation = ((maxMeas.csa_measured - minMeas.csa_measured) / minMeas.csa_measured) * 100;
-                        if (variation > focalChangeThreshold) {
-                            const focalText = `Variação Focal (+${variation.toFixed(0)}%)`;
-                            group.forEach(m => {
-                                if (!m.findings.some(f => f.type === 'focal-change')) {
-                                    m.findings.push({ type: 'focal-change', text: focalText });
-                                }
-                            });
-                        }
+                    const max = group.reduce((a, b) => a.csa_measured > b.csa_measured ? a : b), min = group.reduce((a, b) => a.csa_measured < b.csa_measured ? a : b);
+                    if (min.csa_measured > 0) {
+                        const variation = ((max.csa_measured - min.csa_measured) / min.csa_measured) * 100;
+                        if (variation > focalChangeThreshold) { const text = `Variação Focal (+${variation.toFixed(0)}%)`; group.forEach(m => { if (!m.findings.some(f => f.type === 'focal-change')) m.findings.push({ type: 'focal-change', text }); }); }
                     }
                 }
             }
             return measurements;
         }
-
         function calculateScores() {
-            if (currentAnalysisResult.length === 0) {
-                alert("Por favor, preencha os dados e gere o relatório primeiro.");
-                return;
-            }
-
-            let upssScore = 0;
-            let bochumScore = 0;
-
-            const thickenedPoints = new Set();
-            currentAnalysisResult.forEach(m => {
-                if (m.isThickened) {
-                    thickenedPoints.add(`${m.nerve}-${m.location}`);
-                }
-            });
-
-            thickenedPoints.forEach(pointKey => {
-                if (pointKey.startsWith('Raiz')) {
-                    upssScore += 2;
-                } else {
-                    upssScore += 1;
-                }
-            });
-
-            if (thickenedPoints.has('Mediano-Punho (Pré-Retináculo)')) bochumScore++;
-            if (thickenedPoints.has('Ulnar-Cotovelo')) bochumScore++;
-            if (thickenedPoints.has('Radial-Sulco Espiral')) bochumScore++;
-            if (thickenedPoints.has('Fibular Comum-Cabeça da Fíbula')) bochumScore++;
-            if (thickenedPoints.has('Sural-Perna')) bochumScore++;
-            if (thickenedPoints.has('Raiz de C5-Pescoço') || thickenedPoints.has('Raiz de C6-Pescoço')) bochumScore++;
-
-            const scoresContent = document.getElementById('scores-content');
-            scoresContent.innerHTML = `
-                <div class="score-item">
-                    <strong>Escore UPSS (Simulado):</strong> 
-                    <span class="score-value">${upssScore}</span>
-                    <p style="font-size:0.9em; color: var(--secondary-color);">Este escore quantifica a carga de espessamento neural. Valores mais altos indicam um acometimento mais difuso.</p>
-                </div>
-                <div class="score-item">
-                    <strong>Escore de Bochum (Simulado):</strong> 
-                    <span class="score-value">${bochumScore}</span>
-                    <p style="font-size:0.9em; color: var(--secondary-color);">Este escore avalia um padrão específico de espessamento, frequentemente associado a polineuropatias desmielinizantes.</p>
-                </div>
-            `;
+            if (currentAnalysisResult.length === 0) { alert("Gere o relatório primeiro."); return; }
+            let upss = 0, bochum = 0;
+            const thickened = new Set(currentAnalysisResult.filter(m => m.isThickened).map(m => `${m.nerve}-${m.location}`));
+            thickened.forEach(key => { upss += key.startsWith('Raiz') ? 2 : 1; });
+            if (thickened.has('Mediano-Túnel do Carpo')) bochum++; if (thickened.has('Ulnar-Região Cubital')) bochum++; if (thickened.has('Radial-Sulco Espiral')) bochum++; if (thickened.has('Fibular Comum-Cabeça da Fíbula')) bochum++; if (thickened.has('Sural-Panturrilha')) bochum++; if (thickened.has('Raiz C5-Pescoço') || thickened.has('Raiz C6-Pescoço')) bochum++;
+            const content = document.getElementById('scores-content');
+            content.innerHTML = `<div class="score-item"><strong>Escore UPSS (Simulado):</strong><span class="score-value">${upss}</span><p style="font-size:0.9em; color: var(--secondary-color);">Quantifica a carga de espessamento neural.</p></div><div class="score-item"><strong>Escore de Bochum (Simulado):</strong><span class="score-value">${bochum}</span><p style="font-size:0.9em; color: var(--secondary-color);">Avalia um padrão específico de espessamento.</p></div>`;
             document.getElementById('scores-section').style.display = 'block';
         }
-
         function generateReport(analysisResult) {
-            const reportSection = document.getElementById('report-section');
-            const reportTableBody = document.querySelector('#report-table tbody');
-            const summaryTextElement = document.getElementById('report-summary-text');
-            const explanationContent = document.getElementById('explanation-content');
-            
-            reportTableBody.innerHTML = ''; 
-            explanationContent.innerHTML = '';
-            document.getElementById('scores-section').style.display = 'none';
-
-            const alteredPoints = analysisResult.filter(m => m.findings.length > 0);
-            const foundFindingTypes = new Set();
-
-            if (alteredPoints.length === 0) {
-                summaryTextElement.textContent = "Análise concluída. Nenhum dos parâmetros quantitativos ultrapassou os limiares configurados.";
-                document.querySelector('#report-table').style.display = 'none';
-                document.getElementById('explanation-section').style.display = 'none';
+            const report = document.getElementById('report-section'), tableBody = document.querySelector('#report-table tbody'), summary = document.getElementById('report-summary-text'), explanation = document.getElementById('explanation-content');
+            tableBody.innerHTML = ''; explanation.innerHTML = ''; document.getElementById('scores-section').style.display = 'none';
+            const altered = analysisResult.filter(m => m.findings.length > 0), types = new Set();
+            if (altered.length === 0) {
+                summary.textContent = "Análise concluída. Nenhum achado relevante.";
+                document.querySelector('#report-table').style.display = 'none'; document.getElementById('explanation-section').style.display = 'none';
             } else {
-                document.querySelector('#report-table').style.display = 'table';
-                document.getElementById('explanation-section').style.display = 'block';
-                summaryTextElement.textContent = `Análise concluída. Foram identificados achados relevantes, detalhados abaixo.`;
-                
-                alteredPoints.forEach(point => {
-                    point.findings.forEach(f => foundFindingTypes.add(f.type));
+                document.querySelector('#report-table').style.display = 'table'; document.getElementById('explanation-section').style.display = 'block';
+                summary.textContent = `Análise concluída. Foram identificados achados relevantes, detalhados abaixo.`;
+                altered.forEach(point => {
+                    point.findings.forEach(f => types.add(f.type));
                     const findingsHtml = point.findings.map(f => `<span class="finding-tag tag-${f.type.toLowerCase()}">${f.text}</span>`).join(' ');
-                    const row = `
-                        <tr>
-                            <td>${point.nerve}</td>
-                            <td>${point.location}</td>
-                            <td>${point.side}</td>
-                            <td style="font-weight: bold; color: var(--danger-color);">${point.csa_measured.toFixed(1)} mm²</td>
-                            <td>${findingsHtml}</td>
-                        </tr>
-                    `;
-                    reportTableBody.innerHTML += row;
+                    const row = `<tr><td>${point.nerve}</td><td>${point.location}</td><td>${point.side}</td><td style="font-weight: bold; color: var(--danger-color);">${point.csa_measured.toFixed(1)} mm²</td><td>${findingsHtml}</td></tr>`;
+                    tableBody.innerHTML += row;
                 });
-
-                foundFindingTypes.forEach(type => {
-                    if (explanations[type]) {
-                        explanationContent.innerHTML += `<div class="explanation-item">${explanations[type]}</div>`;
-                    }
-                });
+                types.forEach(type => { if (explanations[type]) { explanation.innerHTML += `<div class="explanation-item">${explanations[type]}</div>`; } });
             }
-            reportSection.style.display = 'block';
-            reportSection.scrollIntoView({ behavior: 'smooth' });
+            report.style.display = 'block';
+            report.scrollIntoView({ behavior: 'smooth' });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Simula o clique na primeira aba para carregar o conteúdo inicial
-            document.querySelector('.tab-btn').click();
-        });
+        // --- FUNÇÕES DE EDIÇÃO (para garantir que não faltem) ---
+        function togglePoint(id) { const point = protocolData.find(p => p.id === id); if (point) { point.enabled = !point.enabled; renderPointsEditor(); } }
+        function deletePoint(id) { if (confirm('Tem certeza?')) { protocolData = protocolData.filter(p => p.id !== id); renderPointsEditor(); } }
+        function addPoint() {
+            const nerve = document.getElementById('new-nerve').value, location = document.getElementById('new-location').value, upper_limit = parseFloat(document.getElementById('new-upper-limit').value);
+            if (nerve && location && !isNaN(upper_limit)) {
+                protocolData.push({ id: nextId++, nerve, location, upper_limit, enabled: true });
+                renderPointsEditor();
+                document.getElementById('new-nerve').value = ''; document.getElementById('new-location').value = ''; document.getElementById('new-upper-limit').value = '';
+            } else { alert('Preencha todos os campos corretamente.'); }
+        }
+        function updateReference(id, value) { const point = protocolData.find(p => p.id === id); if (point) point.upper_limit = parseFloat(value); }
     </script>
 
 </body>
